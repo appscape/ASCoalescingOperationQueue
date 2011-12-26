@@ -19,6 +19,8 @@
         NSInteger i = 0;
         while (true) { // Just increment i forever
             i++;
+            NSLog(@"%d", i);
+            
             [coalescingQueue performBlock:^{
                 // Do something that takes a while with the latest value of i
                 sleep(1);
@@ -29,7 +31,9 @@
                     [self.view reloadData];
                 });
             }];
-            usleep(100);
+            
+            // Add some delay
+            usleep(10000);
         }
     });
 }

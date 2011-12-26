@@ -8,17 +8,11 @@
     dispatch_block_t nextUpBlock;
 }
 
-
-+ (id)coalescingOperationQueue {
-    return [[self alloc] init];
-}
-
-- (id)init {
+- (id)initWithQueue:(dispatch_queue_t)theExecutionQueue {
     if (!(self = [super init]))
         return nil;
     
-    executionQueue = dispatch_queue_create("at.appscape.ASCoalescingOperationQueue.executionQueue", DISPATCH_QUEUE_SERIAL);
-    if (!executionQueue) return nil;
+    executionQueue = theExecutionQueue;
     
     nextUpQueue = dispatch_queue_create("at.appscape.ASCoalescingOperationQueue.nextUpQueue", DISPATCH_QUEUE_SERIAL);
     if (!nextUpQueue) { dispatch_release(executionQueue); return nil; }
@@ -33,6 +27,22 @@
 - (void)dealloc {
     dispatch_release(nextUpQueue);
     dispatch_release(executionQueue);
+}
+
++ (id)coalescingOperationQueue {
+    dispatch_queue_t theExecutionQueue = dispatch_queue_create("at.appscape.ASCoalescingOperationQueue.executionQueue", DISPATCH_QUEUE_SERIAL);
+    if (!theExecutionQueue) return nil;
+
+    return [[self alloc] initWithQueue:theExecutionQueue];
+}
+
++ (id)coalescingOperationQueueUsingMainQueue {
+    return [[self alloc] initWithQueue:dispatch_get_main_queue()];
+}
+
++ (id)coalescingOperationQueueUsingQueue:(dispatch_queue_t)theQueue {
+    dispatch_retain(theQueue);
+    return [[self alloc] initWithQueue:theQueue];
 }
 
 - (void)performBlock:(dispatch_block_t)submittedBlock {

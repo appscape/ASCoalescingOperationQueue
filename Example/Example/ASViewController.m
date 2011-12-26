@@ -13,13 +13,18 @@
     [super viewDidLoad];
     numbers = [NSMutableArray array];
     coalescingQueue = [ASCoalescingOperationQueue coalescingOperationQueue];
+    
+    // Spawn a second "thread"
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSInteger i = 0;
-        while (true) {
+        while (true) { // Just increment i forever
             i++;
             [coalescingQueue performBlock:^{
+                // Do something that takes a while with the latest value of i
                 sleep(1);
+                
                 dispatch_sync(dispatch_get_main_queue(), ^{
+                    // Add i to tableView
                     [numbers addObject:[[NSNumber numberWithInteger:i] stringValue]];
                     [self.view reloadData];
                 });

@@ -34,10 +34,6 @@
     });
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
-}
-
 #pragma mark UITableViewDataSource methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
